@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.gcp
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [annotation-api, app-name, asciidoctor, assertj, gradle, hamcrest, http-client, java, java-application, jib, jrebel, junit, knative, logback, lombok, management, mockito, netty-server, openapi, reactor, readme, shade, yaml]

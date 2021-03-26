@@ -1,0 +1,64 @@
+plugins {
+    id("org.asciidoctor.jvm.convert") version "3.3.0"
+    id("org.zeroturnaround.gradle.jrebel") version "1.1.10"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("io.micronaut.application") version "1.4.2"
+    id("com.google.cloud.tools.jib") version "2.6.0"
+}
+
+version = "0.1"
+group = "com.gcp"
+
+apply from: "gradle/asciidoc.gradle"
+repositories {
+    mavenCentral()
+}
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.gcp.*")
+    }
+}
+
+dependencies {
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("io.micronaut.openapi:micronaut-openapi")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-management")
+    implementation("io.micronaut:micronaut-runtime")
+    implementation("io.swagger.core.v3:swagger-annotations")
+    implementation("javax.annotation:javax.annotation-api")
+    compileOnly("org.projectlombok:lombok")
+    testImplementation("org.assertj:assertj-core")
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut.reactor:micronaut-reactor")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("org.hamcrest:hamcrest")
+    testImplementation("org.mockito:mockito-core")
+}
+
+
+application {
+    mainClass.set("com.gcp.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}
+
+run.dependsOn(generateRebel)
+run {
+    if (project.hasProperty("rebelAgent")) {
+        jvmArgs(rebelAgent)
+    }
+}
+
+
+jib {
+    to {
+        image = "gcr.io/myapp/jib-image"
+    }
+}
